@@ -11,3 +11,68 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* =========================================
+   CUSTOM SWEETALERT2 DARK MODE
+   ========================================= */
+
+/* Ubah background popup dan warna teks saat class .dark aktif */
+.dark .swal2-popup {
+    background-color: #1f2937; /* gray-800 */
+    color: #e5e7eb; /* gray-200 */
+    border: 1px solid #374151; /* gray-700 */
+}
+
+/* Judul */
+.dark .swal2-title {
+    color: #f3f4f6 !important; /* gray-100 */
+}
+
+/* Konten teks / HTML */
+.dark .swal2-html-container {
+    color: #d1d5db !important; /* gray-300 */
+}
+
+/* Tombol Close (X) di pojok */
+.dark .swal2-close {
+    color: #9ca3af !important; /* gray-400 */
+}
+.dark .swal2-close:hover {
+    color: #f3f4f6 !important; /* white saat hover */
+}
+
+/* Input field (jika ada alert yang pakai input) */
+.dark .swal2-input,
+.dark .swal2-textarea,
+.dark .swal2-select {
+    background-color: #374151 !important; /* gray-700 */
+    color: white !important;
+    border-color: #4b5563 !important; /* gray-600 */
+}
+
+/* Loader / Timer Progress Bar */
+.dark .swal2-timer-progress-bar {
+    background-color: #60a5fa !important; /* blue-400 */
+}
+
+/* Menyesuaikan warna icon agar tidak terlalu 'terang' background-nya */
+.dark .swal2-icon.swal2-success {
+    border-color: #10b981; /* green-500 */
+    color: #10b981;
+}
+.dark .swal2-icon.swal2-error {
+    border-color: #ef4444; /* red-500 */
+    color: #ef4444;
+}
+.dark .swal2-icon.swal2-warning {
+    border-color: #f59e0b; /* amber-500 */
+    color: #f59e0b;
+}
+.dark .swal2-icon.swal2-info {
+    border-color: #3b82f6; /* blue-500 */
+    color: #3b82f6;
+}
+.dark .swal2-icon.swal2-question {
+    border-color: #9ca3af; /* gray-400 */
+    color: #9ca3af;
+}

@@ -11,7 +11,7 @@ Route::get('/dashboard', function () {
 });
 
 Route::get('/karyawan', function () {
-    return view('beranda.dashboard');
+    return view('Pages.Karyawan.KaryawanView');
 });
 
 Route::get('/admin', function () {

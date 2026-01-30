@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('asal',30);
             $table->date('tgl_lahir');
             $table->string('alamat',150);
+            $table->string('file',255)->nullable();
             $table->timestamps();
         });
     }

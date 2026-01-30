@@ -13,7 +13,7 @@ class Karyawan extends Model
     use HasFactory;
 
     protected $table='karyawan';
-    protected $fillable = ['nik','nama','jk','asal','tgl_lahir'];
+    protected $fillable = ['nik','nama','jk','asal','tgl_lahir','alamat','file'];
 
     protected $casts = [
         'tgl_lahir' => 'date',
