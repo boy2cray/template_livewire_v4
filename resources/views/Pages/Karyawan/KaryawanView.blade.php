@@ -21,6 +21,7 @@
         title='Data Karyawan'
         description='halaman berisi informasi data karyawan'
         :addbutton=true
+        :showImport=true
     />
 
     {{-- TABEL UTAMA --}}
@@ -29,6 +30,8 @@
     {{-- MODAL --}}
     @livewire('karyawan.tambah-karyawan')
     @livewire('karyawan.edit-karyawan')
+    @livewire('karyawan.hapus-karyawan')
+    @livewire('karyawan.import-karyawan')
     
 </div>
 

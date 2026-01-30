@@ -55,5 +55,21 @@
         icon="alamat"
     />
 
+    <div>
+        @if ($oldFile && !$edit_file)
+            <div class="mb-2">
+                <p class="text-xs text-gray-500 dark:text-gray-400">Foto Saat Ini:</p>
+                <img src="{{ Storage::url($oldFile) }}" class="h-24 w-24 object-cover rounded-lg border dark:border-gray-700">
+            </div>
+        @endif
+
+        <x-file-upload 
+            wire:model="edit_file" 
+            label="Ganti Foto (Opsional)" 
+            accept="image/png,image/jpeg" 
+            maxSize="2" 
+        />
+    </div>
+
 
 </x-modal-input>
