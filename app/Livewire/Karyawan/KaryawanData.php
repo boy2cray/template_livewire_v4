@@ -55,15 +55,16 @@ class KaryawanData extends Component
         //Sesuaikan dengan query select
         $_data = Karyawan::query();
         $_data->select(
-                'nik',
-                'nama',
-                'jk',
-                'asal',
-                'tgl_lahir',
-                'asal',
-                'alamat',
-                'file',
-                );
+            'id',
+            'nik',
+            'nama',
+            'jk',
+            'asal',
+            'tgl_lahir',
+            'asal',
+            'alamat',
+            'file',
+            );
 
         if($this->search)
         {

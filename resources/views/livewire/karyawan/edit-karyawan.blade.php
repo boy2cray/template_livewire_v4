@@ -10,21 +10,21 @@
    <x-err-validation/>
 
     <x-floating-input
-        wire:model="nik"
+        wire:model="edit_nik"
         name="nik"
         label="NIK"
         icon="id"
     />
 
     <x-floating-input
-        wire:model="nama"
+        wire:model="edit_nama"
         name="nama"
         label="NAMA"
         icon="id"
     />
 
     <x-floating-input
-        wire:model="jk"
+        wire:model="edit_jk"
         name="jk"
         label="Jenis Kelamin"
         icon="venus-mars"
@@ -33,14 +33,14 @@
     />
 
     <x-floating-input
-        wire:model="asal"
+        wire:model="edit_asal"
         name="asal"
         label="Asal"
         icon="alamat"
     />
 
     <x-floating-input
-        wire:model="tgl_lahir"
+        wire:model="edit_tgl_lahir"
         name="tgl_lahir"
         label="Tanggal Lahir"
         type="date"
@@ -48,7 +48,7 @@
     />
 
     <x-floating-input
-        wire:model="alamat"
+        wire:model="edit_alamat"
         name="alamat"
         label="Alamat"
         type="textarea"
