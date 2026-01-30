@@ -41,6 +41,8 @@ class KarywanImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
             '*.nik'     => 'required|min:3|unique:karyawan,nik',
             '*.nama'    => 'required|max:50',
             '*.jk'      => 'required|in:L,P',
+            '*.asal'    => 'required|max:50',
+            '*.tgl_lahir'   => 'required|date',
             '*.alamat'  => 'required|max:150'
         ];
     }
