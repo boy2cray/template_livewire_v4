@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Livewire\Karyawan;
-
+use Illuminate\Support\Facades\Gate;
 use App\Models\Karyawan;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -38,6 +38,11 @@ class HapusKaryawan extends Component
 
     public function hapusData()
     {
+        //validasi gerbang
+        if (Gate::denies('kelola-database-utama')) {
+            $this->dispatch('show-alert', message: 'Anda tidak memiliki kewenangan...', type: 'error');
+            return;
+        }
         
         $data = Karyawan::findOrFail($this->dataId)->delete();
         

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Livewire\Admin;
-
+use Illuminate\Support\Facades\Gate;
 use App\Models\User;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -49,6 +49,10 @@ class EditAdmin extends Component
 
     public function editData()
     {
+        if (Gate::denies('kelola-database-utama')) {
+            $this->dispatch('show-alert', message: 'Anda tidak memiliki kewenangan...', type: 'error');
+            return;
+        }
         
         $validasi = $this->validate();
 

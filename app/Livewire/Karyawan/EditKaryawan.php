@@ -7,6 +7,7 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 
 class EditKaryawan extends Component
 {
@@ -61,6 +62,12 @@ class EditKaryawan extends Component
 
     public function editData()
     {
+        //validasi gerbang
+        if (Gate::denies('kelola-database-utama')) {
+            $this->dispatch('show-alert', message: 'Anda tidak memiliki kewenangan...', type: 'error');
+            return;
+        }
+        
         $validasi = $this->validate();
         $karyawan = Karyawan::findOrFail($this->dataId);
 

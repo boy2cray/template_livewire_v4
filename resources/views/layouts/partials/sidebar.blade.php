@@ -32,11 +32,16 @@
     <div class="h-16 flex items-center px-4 shrink-0" 
          :class="(isSidebarPinned || isSidebarHovered) ? 'justify-start' : 'justify-center'">
         <a href="#" class="flex items-center text-white">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-8 w-8 shrink-0">
-            <span class="text-xl font-semibold whitespace-nowrap ml-3 transition-all duration-200"
-                  :class="{'opacity-0 scale-0 w-0': !(isSidebarPinned || isSidebarHovered), 'opacity-100 scale-100 w-auto': isSidebarPinned || isSidebarHovered}">
-                OBAE-UNIK
-            </span>
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 w-10 shrink-0">
+            <div class="ml-3 transition-all duration-200 overflow-hidden"
+                 :class="{'opacity-0 w-0': !(isSidebarPinned || isSidebarHovered), 'opacity-100 w-auto': isSidebarPinned || isSidebarHovered}">
+                <span class="text-lg font-bold whitespace-nowrap block">
+                    ARTEK
+                </span>
+                <span class="text-xs text-slate-400 whitespace-nowrap block">
+                    By:Eko-Teknik
+                </span>
+            </div>
         </a>
     </div>
 

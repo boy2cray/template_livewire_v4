@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Livewire\Admin;
-
+use Illuminate\Support\Facades\Gate;
 use App\Models\User;
 use Livewire\Component;
 
@@ -36,6 +36,11 @@ class TambahAdmin extends Component
 
     public function tambahData()
     {
+        //validasi gerbang
+        if (Gate::denies('kelola-database-utama')) {
+            $this->dispatch('show-alert', message: 'Anda tidak memiliki kewenangan...', type: 'error');
+            return;
+        }
 
         $validasi = $this->validate();
 

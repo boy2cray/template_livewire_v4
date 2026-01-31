@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Livewire\Admin;
-
+use Illuminate\Support\Facades\Gate;
 use App\Models\User;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -40,13 +40,18 @@ class HapusAdmin extends Component
 
     public function hapusData()
     {
+        //validasi gerbang
+        if (Gate::denies('kelola-database-utama')) {
+            $this->dispatch('show-alert', message: 'Anda tidak memiliki kewenangan...', type: 'error');
+            return;
+        }
 
         //cegah menghapus diri sendiri
-        // if (Auth::id() == $this->dataId)
-        // {
-        //     $this->dispatch('show-alert',message: 'Anda tidak bisa menghapus akun anda sendiri...', type: 'error');
-        //     return;
-        // }
+        if (Auth::id() == $this->dataId)
+        {
+            $this->dispatch('show-alert',message: 'Anda tidak bisa menghapus akun anda sendiri...', type: 'error');
+            return;
+        }
         
         $data = User::findOrFail($this->dataId)->delete();
         

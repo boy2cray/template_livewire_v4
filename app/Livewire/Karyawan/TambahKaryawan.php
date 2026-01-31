@@ -4,6 +4,7 @@ namespace App\Livewire\Karyawan;
 use Livewire\WithFileUploads;
 use App\Models\Karyawan;
 use Livewire\Component;
+use Illuminate\Support\Facades\Gate;
 
 class TambahKaryawan extends Component
 {
@@ -39,6 +40,12 @@ class TambahKaryawan extends Component
 
     public function tambahData()
     {
+        //validasi gerbang
+        if (Gate::denies('kelola-database-utama')) {
+            $this->dispatch('show-alert', message: 'Anda tidak memiliki kewenangan...', type: 'error');
+            return;
+        }
+        
         $validasi = $this->validate();
 
         // Logika Upload File

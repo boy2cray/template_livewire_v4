@@ -77,7 +77,7 @@
 
                 {{-- Pastikan komponen logout-button juga disesuaikan jika punya style sendiri --}}
                 <div class="hover:bg-red-50 dark:hover:bg-red-900/20 hover:rounded-b-xl transition">
-                    {{-- @livewire('logout-button') --}}
+                    <livewire:logout-button/>
                 </div>
 
             </div>
