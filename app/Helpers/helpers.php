@@ -1,11 +1,5 @@
 <?php
 
-use App\Models\Angsuran;
-use App\Models\Pinjaman;
-use App\Models\Setkop;
-use App\Models\SimpananKeluar;
-use App\Models\SimpananMasuk;
-
 function terbilang($angka)
 {
     $angka = abs((int) $angka);
