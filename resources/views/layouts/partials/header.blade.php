@@ -2,12 +2,12 @@
     dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 dark:border-b dark:border-gray-700">
     
     <div class="flex items-center">
-        <button @click="sidebarOpen = !sidebarOpen" class="text-white focus:outline-none md:hidden">
+        <button @click="sidebarOpen = !sidebarOpen" class="text-white focus:outline-none md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors">
             <i x-show="!sidebarOpen" class="fas fa-bars fa-lg"></i>
             <i x-show="sidebarOpen" class="fas fa-times fa-lg" style="display: none;"></i>
         </button>
 
-        <button @click="isSidebarPinned = !isSidebarPinned" class="text-white focus:outline-none hidden md:block">
+        <button @click="isSidebarPinned = !isSidebarPinned" class="text-white focus:outline-none hidden md:block p-2 rounded-lg hover:bg-white/10 transition-colors">
             <i class="fas fa-bars fa-lg"></i>
         </button>
 
@@ -38,6 +38,7 @@
         </button>
 
         <div x-data="{ dropdownOpen: false }" class="relative">
+            
             <button @click="dropdownOpen = !dropdownOpen" class="relative block h-10 w-10 rounded-full overflow-hidden border-2 border-gray-300 focus:outline-none focus:border-blue-500 dark:border-gray-600">
                 <img class="h-full w-full object-cover rounded-full ring-2 ring-blue-400 transition duration-300 hover:ring-4 hover:ring-blue-600 dark:ring-gray-500" 
                 src="{{ session('foto')?asset('storage/' . session('foto')):asset('images/d_avatar.png') }}"
@@ -75,7 +76,6 @@
                 
                 <div class="border-t border-gray-100 dark:border-gray-700"></div>
 
-                {{-- Pastikan komponen logout-button juga disesuaikan jika punya style sendiri --}}
                 <div class="hover:bg-red-50 dark:hover:bg-red-900/20 hover:rounded-b-xl transition">
                     <livewire:logout-button/>
                 </div>

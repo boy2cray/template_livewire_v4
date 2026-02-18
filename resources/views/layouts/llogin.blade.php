@@ -5,30 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Dashboard') - Unik</title>
 
+    {{-- SCRIPT DARKMODE --}}
     <script>
-        // 1. Definisikan fungsi untuk set tema
         function updateTheme() {
-            // Cek localStorage atau Preferensi Sistem
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
             } else {
                 document.documentElement.classList.remove('dark');
             }
         }
-
-        // 2. Jalankan saat pertama kali load
         updateTheme();
-
-        // 3. PENTING: Jalankan ulang setiap kali Livewire selesai navigasi
         document.addEventListener('livewire:navigated', () => {
             updateTheme();
         });
     </script>
-
-
+    
     @vite(['resources/css/app.css', 'resources/js/app.js']) 
     {{-- font awesome --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    {{-- sweetalert 2 notifikasi --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @livewireStyles
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">

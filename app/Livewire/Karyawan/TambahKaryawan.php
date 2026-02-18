@@ -5,9 +5,11 @@ use Livewire\WithFileUploads;
 use App\Models\Karyawan;
 use Livewire\Component;
 use Illuminate\Support\Facades\Gate;
+use App\Livewire\Traits\WithAlert;
 
 class TambahKaryawan extends Component
 {
+    use WithAlert;
     use WithFileUploads;
 
     //variabel bindding
@@ -42,25 +44,23 @@ class TambahKaryawan extends Component
     {
         //validasi gerbang
         if (Gate::denies('kelola-database-utama')) {
-            $this->dispatch('show-alert', message: 'Anda tidak memiliki kewenangan...', type: 'error');
+            $this->alert('error', 'Anda tidak memiliki kewenangan');
             return;
         }
         
         $validasi = $this->validate();
 
         // Logika Upload File
-        if ($this->file) {
-            $path = $this->file->store('foto-karyawan', 'public');
-            $validasi['file'] = $path;
-        }
+        $file_foto = tambah_file($this->file, 'foto-karyawan');
+        $validasi['file'] = $file_foto;
 
         // Simpan ke Database
         Karyawan::create($validasi);
 
         // Feedback & Reset
-        $this->dispatch('notify', message: 'Data karyawan berhasil ditambahkan!', type: 'success');
+        $this->alert('success', 'Data karyawan berhasil disimpan');
         $this->dispatch('close-modal');
-        $this->dispatch('data-ditambahkan'); // Untuk refresh table di parent
+        $this->dispatch('refresh-table');
         
         $this->resetError();
     }

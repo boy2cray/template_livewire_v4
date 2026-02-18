@@ -6,11 +6,12 @@ use App\Models\Karyawan;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
+use App\Livewire\Traits\WithAlert;
 
 class EditKaryawan extends Component
 {
+    use WithAlert;
     use WithFileUploads;
 
     public function resetError()
@@ -64,7 +65,7 @@ class EditKaryawan extends Component
     {
         //validasi gerbang
         if (Gate::denies('kelola-database-utama')) {
-            $this->dispatch('show-alert', message: 'Anda tidak memiliki kewenangan...', type: 'error');
+            $this->alert('error', 'Anda tidak memiliki kewenangan');
             return;
         }
         
@@ -72,16 +73,8 @@ class EditKaryawan extends Component
         $karyawan = Karyawan::findOrFail($this->dataId);
 
         // Logika File Foto
-        if ($this->edit_file) {
-            // Hapus foto lama jika ada file baru yang diunggah
-            if ($karyawan->file) {
-                Storage::disk('public')->delete($karyawan->file);
-            }
-            $validasi['edit_file'] = $this->edit_file->store('foto-karyawan', 'public');
-        } else {
-            // Jika tidak upload file baru, gunakan file lama
-            $validasi['edit_file'] = $this->oldFile;
-        }
+        // Logika File Foto
+        $newFile = update_file($this->edit_file, $this->oldFile, 'foto-karyawan');
 
         $karyawan->update([
             'nik' => $validasi['edit_nik'],
@@ -91,14 +84,15 @@ class EditKaryawan extends Component
             'tgl_lahir' => $validasi['edit_tgl_lahir'],
             'alamat' => $validasi['edit_alamat'],
             'alamat' => $validasi['edit_alamat'],
-            'file' => $validasi['edit_file'],
+            'file' => $newFile,
         ]);
 
         //kirim event
-        $this->resetError();
-        $this->dispatch('notify', message: 'Update data berhasil...', type: 'success');
-        $this->dispatch('data-diubah');
+        $this->alert('success', 'Data karyawan berhasil diubah');
         $this->dispatch('close-edit-modal');
+        $this->dispatch('refresh-table'); // Untuk refresh table di parent
+        
+        $this->resetError();
     }
 
     public function render()

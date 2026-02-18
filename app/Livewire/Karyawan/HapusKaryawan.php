@@ -5,9 +5,12 @@ use Illuminate\Support\Facades\Gate;
 use App\Models\Karyawan;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use App\Livewire\Traits\WithAlert;
 
 class HapusKaryawan extends Component
 {
+    use WithAlert;
+
     public function resetError()
     {
         $this->resetValidation();
@@ -18,7 +21,7 @@ class HapusKaryawan extends Component
     public ?int $dataId = null;
 
     //variabel bindding
-    public $hapus_nik,$hapus_nama;
+    public $hapus_nik,$hapus_nama, $file_hapus;
 
     #[On('load_data_hapus')]
     public function loadData($id)
@@ -30,6 +33,7 @@ class HapusKaryawan extends Component
             $this->dataId = $data->id;
             $this->hapus_nik = $data->nik;
             $this->hapus_nama = $data->nama;
+            $this->file_hapus = $data->file;
         
             // Kirim event ke Alpine.js untuk MEMBUKA modal
             $this->dispatch('tampil-hapus-modal');
@@ -40,17 +44,21 @@ class HapusKaryawan extends Component
     {
         //validasi gerbang
         if (Gate::denies('kelola-database-utama')) {
-            $this->dispatch('show-alert', message: 'Anda tidak memiliki kewenangan...', type: 'error');
+            $this->alert('error', 'Anda tidak memiliki kewenangan');
             return;
         }
         
-        $data = Karyawan::findOrFail($this->dataId)->delete();
+        Karyawan::findOrFail($this->dataId)->delete();
+
+        //hapus juga file foto
+        delete_file($this->file_hapus);
         
         //Kirim event
-        $this->resetError();
-        $this->dispatch('notify', message: 'Data berhasil dihapus...', type: 'success');
-        $this->dispatch('data-diubah');
+        $this->alert('success', 'Data karyawan berhasil dihapus');
+        $this->dispatch('refresh-table');
         $this->dispatch('close-hapus-modal');
+
+        $this->resetError();
     }
 
     public function render()

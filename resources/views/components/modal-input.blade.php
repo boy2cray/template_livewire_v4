@@ -7,7 +7,7 @@
 >
     <div 
         x-transition.scale.origin.center.duration.300ms
-        class="relative {{ $ukuran }} bg-white rounded-2xl shadow-2xl w-full flex flex-col max-h-[85vh] border border-gray-200
+        class="relative {{ $ukuran }} bg-gray-100 rounded-2xl shadow-2xl w-full flex flex-col max-h-[90vh] border border-gray-200
         dark:bg-gray-800 dark:border-gray-700 dark:shadow-gray-900/50"
     >
         <div class="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-br from-white via-blue-100 to-blue-200 backdrop-blur-md rounded-t-2xl

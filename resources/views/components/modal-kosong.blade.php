@@ -25,7 +25,7 @@
             <button 
                 type="button" 
                 @click="{{ $idModal }} = false"
-                wire:click="resetImport"
+                wire:click="{{ $close_event }}"
                 wire:loading.attr="disabled"
                 class="text-gray-400 hover:text-gray-700 hover:bg-gray-200 rounded-full p-2 transition
                 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700"

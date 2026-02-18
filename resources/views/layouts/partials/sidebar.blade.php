@@ -32,7 +32,10 @@
     <div class="h-16 flex items-center px-4 shrink-0" 
          :class="(isSidebarPinned || isSidebarHovered) ? 'justify-start' : 'justify-center'">
         <a href="#" class="flex items-center text-white">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 w-10 shrink-0">
+            <div class="h-10 w-10 rounded-full bg-white shadow-md flex items-center justify-center 
+                dark:bg-gray-800 dark:shadow-gray-900/50">
+                <img src="{{ asset('images/logo.webp') }}" alt="Logo" class="h-full w-auto object-contain">
+            </div>
             <div class="ml-3 transition-all duration-200 overflow-hidden"
                  :class="{'opacity-0 w-0': !(isSidebarPinned || isSidebarHovered), 'opacity-100 w-auto': isSidebarPinned || isSidebarHovered}">
                 <span class="text-lg font-bold whitespace-nowrap block">
@@ -54,6 +57,32 @@
             dark:bg-gray-950 dark:border-gray-700 dark:text-gray-300 dark:focus:ring-gray-500">
     </div>
 
+    @php
+    function sidebarIsActive($menu) {
+        if (isset($menu['route']) && request()->is($menu['route'])) {
+            return true;
+        }
+
+        if (isset($menu['submenu'])) {
+            foreach ($menu['submenu'] as $sub) {
+                if (isset($sub['route']) && request()->is($sub['route'])) {
+                    return true;
+                }
+
+                if (isset($sub['child'])) {
+                    foreach ($sub['child'] as $child) {
+                        if (request()->is($child['route'])) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+    @endphp
+
     {{-- LOOPING MENU DI config/sidebar.php --}}
     <nav class="flex-1 overflow-y-auto py-4 space-y-2 custom-scrollbar">
         @foreach ($sidebarMenus as $menu)
@@ -61,10 +90,7 @@
             @if (in_array($otoritas, $menu['roles']))
                 
                 @php
-                    // Logika Active untuk Menu Utama
-                    $isActive = isset($menu['route']) 
-                                ? request()->is($menu['route']) 
-                                : (isset($menu['submenu']) && collect($menu['submenu'])->pluck('route')->contains(fn($val) => request()->is($val)));
+                    $isActive = sidebarIsActive($menu);
                 @endphp
 
                 {{-- MENU TANPA SUBMENU --}}

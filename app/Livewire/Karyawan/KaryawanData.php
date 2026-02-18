@@ -12,8 +12,7 @@ class KaryawanData extends Component
     use WithBaseTable; // Gunakan trait di sini
 
     //Metode untuk menagkap event dari area lain
-    #[On('data-ditambahkan')] 
-    #[On('data-diubah')] 
+    #[On('refresh-table')] 
     public function refreshTabel()
     {
         //fungsi untuk memancing refresh

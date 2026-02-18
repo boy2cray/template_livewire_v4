@@ -3,24 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
     <title>@yield('title', 'Admin Dashboard') - Unik</title>
 
-    {{-- SCRIPT DARK MODE YANG DIPERBAIKI --}}
+    {{-- SCRIPT DARKMODE --}}
     <script>
-        // 1. Definisikan fungsi untuk set tema
         function updateTheme() {
-            // Cek localStorage atau Preferensi Sistem
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
             } else {
                 document.documentElement.classList.remove('dark');
             }
         }
-
-        // 2. Jalankan saat pertama kali load
         updateTheme();
-
-        // 3. PENTING: Jalankan ulang setiap kali Livewire selesai navigasi
         document.addEventListener('livewire:navigated', () => {
             updateTheme();
         });
@@ -33,8 +28,8 @@
     {{-- sweetalert 2 notifikasi --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {{-- Livewire Styles --}}
-    @livewireStyles
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         [x-cloak] { display: none !important; }
     
@@ -43,12 +38,20 @@
         @keyframes fade-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fade-in 0.3s ease-out; }
     </style>
+
+    @livewireStyles
+    
 </head>
 
-{{-- 2. UPDATE BODY: Tambahkan dark:bg-gray-900 dan dark:text-gray-100 --}}
 <body class="bg-gray-100 font-sans leading-normal tracking-normal dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
 
     <div x-data="{ sidebarOpen: false, isSidebarPinned: true, isSidebarHovered: false, searchTerm: '' }" x-cloak>
+        
+        {{-- Loader --}}
+        <div id="page-loader" class="absolute inset-0 items-center justify-center z-50 bg-gray-100/75 backdrop-blur-sm hidden dark:bg-gray-900/75">
+            <div class="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent"></div>
+        </div>
+        
         {{-- Sidebar --}}
         @include('layouts.partials.sidebar')
 
@@ -60,11 +63,6 @@
                 'translate-x-64': sidebarOpen
             }">
 
-            {{-- 3. UPDATE LOADER: Tambahkan dark:bg-gray-900/75 agar loader juga gelap --}}
-            <div id="page-loader" class="absolute inset-0 items-center justify-center z-50 bg-gray-100/75 backdrop-blur-sm hidden dark:bg-gray-900/75">
-                <div class="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent"></div>
-            </div>
-
             {{-- Header halaman --}}
             @include('layouts.partials.header')
 
@@ -72,6 +70,11 @@
             <main class="flex-1 p-6">
                 @yield('content')
             </main>
+
+            {{-- Footer --}}
+            <footer class="w-full p-4 text-center text-sm text-gray-500 dark:text-gray-400 mt-auto border-t border-gray-200 dark:border-gray-700">
+                &copy; {{ date('Y') }} ARTEK Dashboard. Created By: Eko_Teknik.
+            </footer>
 
         </div>
     </div>

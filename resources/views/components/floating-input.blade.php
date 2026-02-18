@@ -22,168 +22,201 @@
 @php
     use Illuminate\Support\Str;
 
-    if (!$name) $name = uniqid('nama_');
-    
+    $name ??= uniqid('field_');
+
     $allowedTypes = ['text','date','datetime-local','email','number','password','textarea','select'];
-    if (!in_array($type, $allowedTypes)) $type = 'text';
+    $type = in_array($type, $allowedTypes) ? $type : 'text';
 
-    $fieldId = $id ?? Str::slug('field_' . $name);
-    $errorId = $fieldId . '_error';
-    $helpId = $fieldId . '_help';
+    $fieldId = $id ?? Str::slug('input_'.$name);
+    $errorId = $fieldId.'_error';
+    $helpId  = $fieldId.'_help';
+
     $hasError = $errors->has($name);
-
-    $describedBy = trim(
-        ($hasError ? $errorId . ' ' : '') .
-        ($helpText ? $helpId : '')
-    );
-
-    $xModelAttr = $attributes->get('x-model') ?? null;
-    $oldValue = old($name);
-    $xInitAttr = null;
-    if ($xModelAttr && $oldValue !== null && $oldValue !== '') {
-        $jsonOld = json_encode($oldValue, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);
-        $xInitAttr = "{$xModelAttr} = {$jsonOld}";
-    }
     $finalValue = old($name, $value);
+
+    // Accessibility IDs
+    $describedBy = collect([
+        $hasError ? $errorId : null,
+        $helpText ? $helpId : null,
+    ])->filter()->implode(' ');
+
+    /* ==========================
+        STYLE CONFIG
+    ========================== */
     
-    // --- 1. Kelas Input Dasar ---
-    // Update: dark:bg-transparent dark:text-white dark:border-gray-600
-    $baseClasses = 'peer block w-full rounded-lg border bg-transparent text-gray-900 dark:text-white transition-all duration-200 ease-in-out focus:outline-none';
+    // Base Input Style: Modernized with shadow, better transition, and background handling
+    $baseInput = 'peer block w-full rounded-lg text-sm shadow-sm transition-all duration-200 ease-in-out focus:outline-none disabled:opacity-75 disabled:cursor-not-allowed';
     
-    // Update: dark:bg-gray-700 dark:text-gray-400
-    $disabledClass = $disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400' : 'dark:border-gray-600';
+    // Background & Text Colors
+    $colors = 'bg-white text-gray-900 dark:bg-gray-900 dark:text-white placeholder-transparent';
+    if ($disabled) {
+        $colors = 'bg-gray-50 text-gray-500 dark:bg-gray-800 dark:text-gray-400';
+    }
+
+    // Border & Focus States
+    if ($hasError) {
+        $border = 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10';
+    } else {
+        $border = 'border-gray-300 hover:border-gray-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 dark:border-gray-700 dark:hover:border-gray-600 dark:focus:border-blue-500';
+    }
+
+    // Padding Logic
+    $paddingX = $icon ? 'pl-11 pr-4' : 'px-4'; // Sedikit lebih lebar untuk estetika
+    $paddingY = $floating ? 'pt-6 pb-2' : 'py-3';
+
+    // Gabungkan Class Input
+    $inputClass = "$baseInput $colors $border $paddingX $paddingY";
+
+    // Label Styling
+    $labelBase = 'absolute pointer-events-none transition-all duration-200 ease-out origin-[0] z-10 truncate max-w-[calc(100%-2rem)]';
     
-    // --- 2. Kelas Padding ---
-    $paddingClass = $icon ? 'pl-10 pr-3' : 'px-3';
-    $verticalPaddingClass = $floating ? 'pt-4 pb-2' : 'py-2.5';
+    // Floating Logic: Adjusted translation for perfect vertical alignment on border
+    $labelFloating = ($icon ? 'left-11' : 'left-4').' top-4
+        peer-focus:top-0.5 peer-focus:scale-75 peer-focus:-translate-y-0
+        peer-not-placeholder-shown:top-0.5 peer-not-placeholder-shown:scale-75 peer-not-placeholder-shown:-translate-y-0';
 
-    // --- 3. Kelas Status (Error / Focus) ---
-    $stateClasses = $hasError
-        ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/30'
-        : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 dark:focus:ring-blue-500/50'; 
+    // Label Colors
+    if ($hasError) {
+        $labelColor = 'text-red-500 dark:text-red-400';
+    } else {
+        $labelColor = 'text-gray-500 peer-focus:text-blue-600 dark:text-gray-400 dark:peer-focus:text-blue-400';
+    }
 
-    // --- 4. Gabungkan Semua Kelas Input ---
-    $finalClasses = "$baseClasses $paddingClass $verticalPaddingClass $stateClasses $disabledClass";
+    // Final Label Class
+    $labelClass = $floating
+        ? "$labelBase $labelFloating $labelColor"
+        : 'block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-200';
 
-    // --- 5. Kelas Ikon ---
-    $iconBaseClasses = 'absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none transition-colors duration-300';
-    $iconColorClasses = $hasError
-        ? 'text-red-400'
-        : 'text-gray-400 peer-focus:text-blue-500 dark:text-gray-500 dark:peer-focus:text-blue-400';
-
-    // --- 6. Kelas Label ---
-    $labelBaseClasses = 'transition-all duration-300';
-    $labelColorClasses = $hasError
-        ? 'text-red-600 dark:text-red-400'
-        : ($floating ? 'text-gray-500 peer-focus:text-blue-600 dark:text-gray-400 dark:peer-focus:text-blue-400' : 'text-gray-700 dark:text-gray-300');
-
-    // Update: dark:bg-gray-800 (agar menutupi garis border di background gelap)
-    $labelPositionClasses = $floating
-        ? "absolute origin-left bg-white dark:bg-gray-800 px-1 pointer-events-none " . ($icon ? 'left-10' : 'left-3') . " top-1/2 -translate-y-1/2
-           peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75
-           peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:-translate-y-4 peer-not-placeholder-shown:scale-75"
-        : "block mb-1 text-sm font-medium";
-
-    $finalLabelClasses = "$labelBaseClasses $labelPositionClasses $labelColorClasses";
 @endphp
 
-<div class="w-full mb-4">
-
+<div class="w-full mb-5 group">
+    {{-- Static Label (Non-floating) --}}
     @if ($label && !$floating)
-        <label
-            for="{{ $fieldId }}"
-            class="{{ $finalLabelClasses }}"
-        >
-            {{ $label }} @if($required) <span class="text-red-500">*</span> @endif
+        <label for="{{ $fieldId }}" class="{{ $labelClass }}">
+            {{ $label }} @if($required)<span class="text-red-500 select-none">*</span>@endif
         </label>
     @endif
 
-    <div class="relative">
+    <div
+        class="relative"
+        x-data="{
+            raw: @entangle($attributes->wire('model')),
+            display: '',
+            isNumber: '{{ $type }}' === 'number',
+            format(v) {
+                if (!this.isNumber || v === null || v === undefined) return v;
+                // Format: 1.000.000
+                return v.toString().replace(/\D/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+            },
+            init() {
+                if (this.isNumber) {
+                    this.display = this.format(this.raw);
+                    this.$watch('raw', v => this.display = this.format(v));
+                }
+            }
+        }"
+        x-modelable="raw"
+    >
+        {{-- TEXTAREA --}}
+        @if ($type === 'textarea')
+            <textarea
+                id="{{ $fieldId }}"
+                name="{{ $name }}"
+                rows="4"
+                x-model="raw"
+                aria-describedby="{{ $describedBy }}"
+                {{ $disabled ? 'disabled' : '' }}
+                {{ $readonly ? 'readonly' : '' }}
+                placeholder="{{ $floating ? ' ' : $placeholder }}"
+                class="{{ $inputClass }} resize-y min-h-20"
+                {{ $attributes->whereDoesntStartWith(['wire:model','x-model']) }}
+            >{{ $finalValue }}</textarea>
 
-        @switch($type)
-            @case('textarea')
-                <textarea
-                    id="{{ $fieldId }}"
-                    name="{{ $name }}"
-                    rows="4"
-                    placeholder="{{ $floating ? ' ' : $placeholder }}"
-                    @if ($required) required @endif
-                    @if ($readonly) readonly @endif
-                    @if ($disabled) disabled @endif
-                    @if ($inputmode) inputmode="{{ $inputmode }}" @endif
-                    @if ($describedBy) aria-describedby="{{ $describedBy }}" @endif
-                    @if ($xInitAttr) x-init="{{ $xInitAttr }}" @endif
-                    class="{{ $finalClasses }} resize-none min-h-27.5 dark:bg-transparent"
-                    {{ $attributes }}
-                >{{ old($name, $value) }}</textarea>
-            @break
+        {{-- SELECT --}}
+        @elseif ($type === 'select')
+            <select
+                id="{{ $fieldId }}"
+                name="{{ $name }}"
+                x-model="raw"
+                aria-describedby="{{ $describedBy }}"
+                class="{{ $inputClass }} appearance-none cursor-pointer"
+                {{ $disabled ? 'disabled' : '' }}
+                {{ $attributes->whereDoesntStartWith(['wire:model','x-model']) }}
+            >
+                <option value="" disabled selected class="text-gray-400">{{ $placeholder ?: '' }}</option>
+                @foreach ($options as $key => $text)
+                    <option value="{{ $key }}" class="text-gray-900 dark:text-white">{{ $text }}</option>
+                @endforeach
+            </select>
 
-            @case('select')
-                <select
-                    id="{{ $fieldId }}"
-                    name="{{ $name }}"
-                    @if ($required) required @endif
-                    @if ($disabled) disabled @endif
-                    @if ($describedBy) aria-describedby="{{ $describedBy }}" @endif
-                    @if ($xInitAttr) x-init="{{ $xInitAttr }}" @endif
-                    class="{{ $finalClasses }} appearance-none cursor-pointer dark:bg-transparent"
-                    {{ $attributes }}
-                >
-                    <option value="" disabled {{ in_array($finalValue, [null, ''], true) ? 'selected' : '' }} class="dark:bg-gray-800">Pilih {{ strtolower($label ?: $name) }}</option>
-                    
-                    @foreach ($options as $key => $text)
-                        <option value="{{ $key }}" {{ (!in_array($finalValue, [null, ''], true) && $finalValue == $key) ? 'selected' : '' }} class="dark:bg-gray-800">
-                            {{ $text }}
-                        </option>
-                    @endforeach
-                </select>
-
-                <svg class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none dark:text-gray-500"
-                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                    <path stroke="currentColor" stroke-width="1.5" d="M6 8l4 4 4-4"/>
+            {{-- Custom Chevron for Select --}}
+            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
+                <svg class="w-5 h-5 text-gray-400 transition-colors group-hover:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
                 </svg>
-            @break
+            </div>
 
-            @default
-                <input
-                    id="{{ $fieldId }}"
-                    name="{{ $name }}"
-                    type="{{ $type }}"
-                    @if(!in_array($finalValue, [null, ''], true)) value="{{ $finalValue }}" @endif
-                    placeholder="{{ $floating ? ' ' : $placeholder }}"
-                    autocomplete="{{ $autocomplete }}"
-                    @if ($required) required @endif
-                    @if ($readonly) readonly @endif
-                    @if ($disabled) disabled @endif
-                    @if ($maxlength) maxlength="{{ $maxlength }}" @endif
-                    @if ($inputmode) inputmode="{{ $inputmode }}" @endif
-                    @if ($describedBy) aria-describedby="{{ $describedBy }}" @endif
-                    @if ($xInitAttr) x-init="{{ $xInitAttr }}" @endif
-                    class="{{ $finalClasses }} dark:bg-transparent"
-                    {{ $attributes }}
-                />
-        @endswitch
+        {{-- STANDARD INPUT (TEXT/NUMBER/ETC) --}}
+        @else
+            <input
+                id="{{ $fieldId }}"
+                type="{{ $type === 'number' ? 'text' : $type }}"
+                name="{{ $name }}"
+                aria-describedby="{{ $describedBy }}"
+                autocomplete="{{ $autocomplete }}"
+                {{ $disabled ? 'disabled' : '' }}
+                {{ $readonly ? 'readonly' : '' }}
+                {{ $attributes->whereDoesntStartWith(['wire:model','x-model']) }}
 
-        @if ($icon)
-            <x-icon :name="$icon"
-                class="{{ $iconBaseClasses }} {{ $iconColorClasses }}" />
+                @if($type === 'number')
+                    x-model="display"
+                    inputmode="numeric"
+                    @input="raw = $event.target.value.replace(/\D/g,'')"
+                @else
+                    x-model="raw"
+                @endif
+
+                placeholder="{{ $floating ? ' ' : $placeholder }}"
+                class="{{ $inputClass }}"
+            />
         @endif
 
+        {{-- ICON --}}
+        @if ($icon)
+            <div class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+                <x-icon
+                    :name="$icon"
+                    class="w-5 h-5 transition-colors duration-200
+                    {{ $hasError ? 'text-red-500' : 'text-gray-400 peer-focus:text-blue-600 dark:text-gray-500 dark:peer-focus:text-blue-500' }}"
+                />
+            </div>
+        @endif
+
+        {{-- FLOATING LABEL --}}
         @if ($label && $floating)
-            <label
-                for="{{ $fieldId }}"
-                class="{{ $finalLabelClasses }}"
-            >
-                {{ $label }} @if($required) <span class="text-red-500">*</span> @endif
+            <label for="{{ $fieldId }}" class="{{ $labelClass }}">
+                {{ $label }} @if($required)<span class="text-red-500">*</span>@endif
             </label>
         @endif
     </div>
 
+    {{-- HELP TEXT --}}
     @if ($helpText)
-        <p id="{{ $helpId }}" class="text-xs text-gray-500 mt-1.5 dark:text-gray-400">{{ $helpText }}</p>
+        <div id="{{ $helpId }}" class="mt-1.5 flex items-start gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+            <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="leading-relaxed">{{ $helpText }}</span>
+        </div>
     @endif
 
+    {{-- ERROR MESSAGE --}}
     @error($name, $errorBag)
-        <p id="{{ $errorId }}" class="text-sm text-red-600 mt-1.5 font-medium dark:text-red-400">{{ $message }}</p>
+        <div id="{{ $errorId }}" class="mt-1.5 flex items-center gap-1.5 text-sm font-medium text-red-600 dark:text-red-400 animate-pulse">
+            <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span>{{ $message }}</span>
+        </div>
     @enderror
 </div>
